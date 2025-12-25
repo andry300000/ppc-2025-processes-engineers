@@ -81,22 +81,13 @@ TEST_P(CheremkhinAGausVertRunFuncTestsProcesses, SolveLinearSystem) {
 }
 
 const std::array<TestType, 3> kTestParam = {
-    std::make_tuple(
-        MakeInputFromAxb(std::vector<double>{2.0, 1.0,
-                                            5.0, 7.0},
-                         std::vector<double>{3.0, 12.0}, 2),
-        OutType{1.0, 1.0}),
-    std::make_tuple(
-        MakeInputFromAxb(
-            std::vector<double>{3.0, 2.0, -1.0,
-                                2.0, -2.0, 4.0,
-                                -1.0, 0.5, -1.0},
-            MulAx(std::vector<double>{3.0, 2.0, -1.0,
-                                      2.0, -2.0, 4.0,
-                                      -1.0, 0.5, -1.0},
-                  std::vector<double>{1.0, -2.0, -2.0}, 3),
-            3),
-        OutType{1.0, -2.0, -2.0}),
+    std::make_tuple(MakeInputFromAxb(std::vector<double>{2.0, 1.0, 5.0, 7.0}, std::vector<double>{3.0, 12.0}, 2),
+                    OutType{1.0, 1.0}),
+    std::make_tuple(MakeInputFromAxb(std::vector<double>{3.0, 2.0, -1.0, 2.0, -2.0, 4.0, -1.0, 0.5, -1.0},
+                                     MulAx(std::vector<double>{3.0, 2.0, -1.0, 2.0, -2.0, 4.0, -1.0, 0.5, -1.0},
+                                           std::vector<double>{1.0, -2.0, -2.0}, 3),
+                                     3),
+                    OutType{1.0, -2.0, -2.0}),
     std::make_tuple(MakeInputFromAxb(std::vector<double>{5.0}, std::vector<double>{10.0}, 1), OutType{2.0})};
 
 const auto kTestTasksList = std::tuple_cat(

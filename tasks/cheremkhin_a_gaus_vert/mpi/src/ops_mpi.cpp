@@ -92,8 +92,8 @@ bool CheremkhinAGausVertMPI::RunImpl() {
   for (int row = 0; row < n; ++row) {
     for (int gc = local_cols.start; gc < local_cols.end; ++gc) {
       const int lc = gc - local_cols.start;
-      local_a[(static_cast<std::size_t>(row) * static_cast<std::size_t>(local_cols_count)) + static_cast<std::size_t>(lc)] =
-          At(in.a, n, row, gc);
+      local_a[(static_cast<std::size_t>(row) * static_cast<std::size_t>(local_cols_count)) +
+              static_cast<std::size_t>(lc)] = At(in.a, n, row, gc);
     }
   }
 
@@ -137,7 +137,8 @@ bool CheremkhinAGausVertMPI::RunImpl() {
 
     if (rank == owner) {
       const int lc_k = k - local_cols.start;
-      pivot = local_a[(static_cast<std::size_t>(k) * static_cast<std::size_t>(local_cols_count)) + static_cast<std::size_t>(lc_k)];
+      pivot = local_a[(static_cast<std::size_t>(k) * static_cast<std::size_t>(local_cols_count)) +
+                      static_cast<std::size_t>(lc_k)];
     }
     MPI_Bcast(&pivot, 1, MPI_DOUBLE, owner, MPI_COMM_WORLD);
     if (std::abs(pivot) < kEps) {
@@ -152,7 +153,8 @@ bool CheremkhinAGausVertMPI::RunImpl() {
                                  static_cast<std::size_t>(lc_k)];
         multipliers[static_cast<std::size_t>(row - (k + 1))] = v / pivot;
         // zero out pivot col under diagonal on owner
-        local_a[(static_cast<std::size_t>(row) * static_cast<std::size_t>(local_cols_count)) + static_cast<std::size_t>(lc_k)] = 0.0;
+        local_a[(static_cast<std::size_t>(row) * static_cast<std::size_t>(local_cols_count)) +
+                static_cast<std::size_t>(lc_k)] = 0.0;
       }
     } else {
       multipliers.resize(static_cast<std::size_t>(n - (k + 1)));
@@ -167,8 +169,10 @@ bool CheremkhinAGausVertMPI::RunImpl() {
       const double m = multipliers[static_cast<std::size_t>(row - (k + 1))];
       for (int gc = std::max(k + 1, local_cols.start); gc < local_cols.end; ++gc) {
         const int lc = gc - local_cols.start;
-        local_a[(static_cast<std::size_t>(row) * static_cast<std::size_t>(local_cols_count)) + static_cast<std::size_t>(lc)] -=
-            m * local_a[(static_cast<std::size_t>(k) * static_cast<std::size_t>(local_cols_count)) + static_cast<std::size_t>(lc)];
+        local_a[(static_cast<std::size_t>(row) * static_cast<std::size_t>(local_cols_count)) +
+                static_cast<std::size_t>(lc)] -=
+            m * local_a[(static_cast<std::size_t>(k) * static_cast<std::size_t>(local_cols_count)) +
+                        static_cast<std::size_t>(lc)];
       }
       b[static_cast<std::size_t>(row)] -= m * b[static_cast<std::size_t>(k)];
     }
@@ -179,7 +183,8 @@ bool CheremkhinAGausVertMPI::RunImpl() {
     double partial_sum = 0.0;
     for (int gc = std::max(i + 1, local_cols.start); gc < local_cols.end; ++gc) {
       const int lc = gc - local_cols.start;
-      partial_sum += local_a[(static_cast<std::size_t>(i) * static_cast<std::size_t>(local_cols_count)) + static_cast<std::size_t>(lc)] *
+      partial_sum += local_a[(static_cast<std::size_t>(i) * static_cast<std::size_t>(local_cols_count)) +
+                             static_cast<std::size_t>(lc)] *
                      x[static_cast<std::size_t>(gc)];
     }
 
@@ -190,7 +195,8 @@ bool CheremkhinAGausVertMPI::RunImpl() {
     double diag = 0.0;
     if (rank == owner) {
       const int lc = i - local_cols.start;
-      diag = local_a[(static_cast<std::size_t>(i) * static_cast<std::size_t>(local_cols_count)) + static_cast<std::size_t>(lc)];
+      diag = local_a[(static_cast<std::size_t>(i) * static_cast<std::size_t>(local_cols_count)) +
+                     static_cast<std::size_t>(lc)];
     }
     MPI_Bcast(&diag, 1, MPI_DOUBLE, owner, MPI_COMM_WORLD);
     if (std::abs(diag) < kEps) {
