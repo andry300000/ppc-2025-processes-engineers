@@ -23,8 +23,7 @@ std::vector<int> SortedCopy(std::vector<int> v) {
 
 }  // namespace
 
-class CheremkhinARadixSortBatcherRunFuncTestsProcesses
-    : public ppc::util::BaseRunFuncTests<InType, OutType, TestType> {
+class CheremkhinARadixSortBatcherRunFuncTestsProcesses : public ppc::util::BaseRunFuncTests<InType, OutType, TestType> {
  public:
   static std::string PrintTestParam(const TestType &test_param) {
     const auto &input = std::get<0>(test_param);
@@ -70,17 +69,15 @@ const std::array<TestType, 5> kTestParam = {
     std::make_tuple(InType{42}, SortedCopy(InType{42})),
     std::make_tuple(InType{1000000, -1000000, 7, 0, -7, 7}, SortedCopy(InType{1000000, -1000000, 7, 0, -7, 7}))};
 
-const auto kTestTasksList = std::tuple_cat(
-    ppc::util::AddFuncTask<CheremkhinARadixSortBatcherMPI, InType>(kTestParam,
-                                                                  PPC_SETTINGS_cheremkhin_a_radix_sort_batcher),
-    ppc::util::AddFuncTask<CheremkhinARadixSortBatcherSEQ, InType>(kTestParam,
-                                                                  PPC_SETTINGS_cheremkhin_a_radix_sort_batcher));
+const auto kTestTasksList = std::tuple_cat(ppc::util::AddFuncTask<CheremkhinARadixSortBatcherMPI, InType>(
+                                               kTestParam, PPC_SETTINGS_cheremkhin_a_radix_sort_batcher),
+                                           ppc::util::AddFuncTask<CheremkhinARadixSortBatcherSEQ, InType>(
+                                               kTestParam, PPC_SETTINGS_cheremkhin_a_radix_sort_batcher));
 
 const auto kGtestValues = ppc::util::ExpandToValues(kTestTasksList);
 
-const auto kPerfTestName =
-    CheremkhinARadixSortBatcherRunFuncTestsProcesses::PrintFuncTestName<
-        CheremkhinARadixSortBatcherRunFuncTestsProcesses>;
+const auto kPerfTestName = CheremkhinARadixSortBatcherRunFuncTestsProcesses::PrintFuncTestName<
+    CheremkhinARadixSortBatcherRunFuncTestsProcesses>;
 
 INSTANTIATE_TEST_SUITE_P(RadixSortBatcherTest, CheremkhinARadixSortBatcherRunFuncTestsProcesses, kGtestValues,
                          kPerfTestName);

@@ -80,7 +80,8 @@ void CompareSplit(int rank, int partner, int keep_cnt, std::vector<int> *local) 
   if (rank < partner) {
     std::copy_n(merged.begin(), static_cast<std::size_t>(keep_cnt), new_local.begin());
   } else {
-    std::copy_n(merged.end() - static_cast<std::ptrdiff_t>(keep_cnt), static_cast<std::size_t>(keep_cnt), new_local.begin());
+    std::copy_n(merged.end() - static_cast<std::ptrdiff_t>(keep_cnt), static_cast<std::size_t>(keep_cnt),
+                new_local.begin());
   }
   local->swap(new_local);
 }
@@ -118,7 +119,12 @@ CheremkhinARadixSortBatcherMPI::CheremkhinARadixSortBatcherMPI(const InType &in)
 }
 
 bool CheremkhinARadixSortBatcherMPI::ValidationImpl() {
-  return !GetInput().empty();
+  int rank = 0;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  if (rank == 0) {
+    return !GetInput().empty();
+  }
+  return true;
 }
 
 bool CheremkhinARadixSortBatcherMPI::PreProcessingImpl() {

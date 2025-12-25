@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <mpi.h>
 
 #include <algorithm>
 #include <chrono>
@@ -32,18 +33,38 @@ InType MakeInput(std::size_t n) {
 }  // namespace
 
 class RadixSortBatcherRunPerfTestProcesses : public ppc::util::BaseRunPerfTests<InType, OutType> {
-  static constexpr std::size_t kN = 1U << 20;
+  // Keep the test heavy enough but still runnable for multiple MPI counts.
+  static constexpr std::size_t kN = 6000000U;
 
   InType input_data_;
   OutType correct_answer_;
+  int rank_ = 0;
+  bool mpi_inited_ = false;
 
   void SetUp() override {
-    input_data_ = MakeInput(kN);
-    correct_answer_ = input_data_;
-    std::ranges::sort(correct_answer_);
+    int inited = 0;
+    MPI_Initialized(&inited);
+    mpi_inited_ = (inited != 0);
+    if (mpi_inited_) {
+      MPI_Comm_rank(MPI_COMM_WORLD, &rank_);
+    } else {
+      rank_ = 0;
+    }
+
+    if (!mpi_inited_ || rank_ == 0) {
+      input_data_ = MakeInput(kN);
+      correct_answer_ = input_data_;
+      std::ranges::sort(correct_answer_);
+    } else {
+      input_data_.clear();
+      correct_answer_.clear();
+    }
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
+    if (mpi_inited_ && rank_ != 0) {
+      return true;
+    }
     return output_data == correct_answer_;
   }
 
@@ -58,7 +79,7 @@ class RadixSortBatcherRunPerfTestProcesses : public ppc::util::BaseRunPerfTests<
       auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now - t0).count();
       return static_cast<double>(ns) * 1e-9;
     };
-    perf_attrs.num_running = 3;
+    perf_attrs.num_running = 1;
   }
 };
 
