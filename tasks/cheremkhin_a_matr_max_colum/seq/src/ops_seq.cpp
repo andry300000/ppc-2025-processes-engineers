@@ -10,6 +10,7 @@ namespace cheremkhin_a_matr_max_colum {
 
 CheremkhinAMatrMaxColumSEQ::CheremkhinAMatrMaxColumSEQ(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
+  GetInput().reserve(in.size());
   GetInput() = in;
   GetOutput() = {};
 }

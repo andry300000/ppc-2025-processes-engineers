@@ -58,6 +58,7 @@ void FillResultPart(std::vector<int> &result, const ColRange &range, const std::
 
 CheremkhinAMatrMaxColumMPI::CheremkhinAMatrMaxColumMPI(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
+  GetInput().reserve(in.size());
   GetInput() = in;
   GetOutput() = {};
 }
