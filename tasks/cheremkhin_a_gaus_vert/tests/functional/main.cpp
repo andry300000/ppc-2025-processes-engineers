@@ -3,6 +3,7 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
+#include <ostream>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -13,6 +14,16 @@
 #include "util/include/func_test_util.hpp"
 
 namespace cheremkhin_a_gaus_vert {
+
+[[maybe_unused]] static void PrintTo(const Input &in, std::ostream *os) {
+  *os << "{n=" << in.n << ", a_size=" << in.a.size() << ", b_size=" << in.b.size() << "}";
+}
+
+static void PrintTo(const ppc::util::FuncTestParam<InType, OutType, TestType> &param, std::ostream *os) {
+  const auto &test_name = std::get<1>(param);
+  const auto &test_case = std::get<2>(param);
+  *os << "{name=" << test_name << ", n=" << std::get<0>(test_case).n << "}";
+}
 
 namespace {
 
